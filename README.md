@@ -1,23 +1,29 @@
-# LLM Jailbreak Attack Framework Reproduction
+# LLM Jailbreak Attack & Evaluation Framework Reproduction
 
-This repository documents my reproduction of the StegoRedTeam baseline framework during my internship at Lingxin Digital Tech. 
+This repository documents my engineering reproduction of an LLM safety evaluation framework (based on StegoRedTeam and LLM-as-a-Judge methodologies) during my internship at Lingxin Digital Tech.
 
 ## 🎯 Objective
-To reproduce state-of-the-art jailbreak attacks (e.g., StegoRedTeam) and evaluate LLM vulnerability using the AdvBench and JADE-DB datasets.
+To build a localized, automated pipeline for evaluating LLM vulnerability against steganographic jailbreak attacks, using commercial APIs (Claude/GLM-4) and an LLM-based evaluator.
 
 ## 🛠️ Engineering Contributions (What I Did)
-While the core attack algorithms are based on the official competition baseline, I made the following engineering adaptations to deploy it in a production-like environment:
+While the core attack algorithms are based on open-source baselines, I engineered the following components for production deployment:
 
-1. **Environment Migration**: Successfully migrated the framework from a local Windows environment to a **Linux (WSL/Ubuntu)** server, resolving complex Python dependency conflicts (e.g., specific versions of `torch`, `transformers`).
-2. **API Integration**: Modified the original script to support **commercial API endpoints** (Claude, GLM-4) instead of just local models, requiring custom wrapper classes for rate limiting and error handling.
-3. **Batch Evaluation**: Created a batch processing pipeline to evaluate 1000+ prompts from the JADE-DB dataset, logging success rates and response latency.
+1. **Environment Migration**: Migrated the framework from Windows to **Linux (WSL/Ubuntu)**, resolving Python dependency conflicts (e.g., `torch`, `transformers` versions).
+2. **API Integration**: Modified the original script to support **OpenAI-compatible commercial APIs** (Claude, GLM-4), implementing custom wrapper classes for rate limiting and error handling.
+3. **Automated Evaluation Pipeline**: Implemented an **LLM-as-a-Judge** system (see `llm_judge_evaluator.py`) to automatically score jailbreak success rates across large datasets (e.g., JADE-DB).
+4. **Batch Processing**: Created a batch runner to process 500+ prompts, logging success rates and saving results to CSV.
 
-##  Setup Guide (How I Ran It)
-1. **Environment Setup**:
+## 📂 Repository Structure
+- `config_template.py`: API configuration template for Target, Evaluator, and Helper models.
+- `llm_judge_evaluator.py`: The automated evaluation script using LLM-as-a-Judge (safe for public sharing).
+- `sample_results.csv`: Sample output from a test run (10 samples).
+
+## ⚠️ Note on Code Availability
+- **Attack Prompts**: The specific steganographic attack prompts (e.g., "RedTeam_Steganalysis_AI") are **omitted** to comply with corporate NDA and safety policies.
+- **Datasets**: Internal datasets are excluded. This repo uses public dataset structures (AdvBench/JADE-DB) for demonstration.
+
+##  How to Run (Evaluation Pipeline)
+1. **Setup**:
    ```bash
-   # Created isolated conda environment
-   conda create -n jailbreak python=3.10
-   conda activate jailbreak
-   
-   # Installed dependencies (resolved conflicts manually)
-   pip install -r requirements.txt
+   conda create -n safety python=3.10
+   pip install openai pandas tqdm
